@@ -1,116 +1,5 @@
-/*var CONST = {
-	countryCode : {
-		name:"区编号",
-		attr:"countryCode"
-	},
-	townCode :{
-		name:"乡镇编号",
-		attr:"townCode"
-	},
-	townName:{
-		name:'乡镇名',
-		attr:'townName'
-	},
-	villageName:{
-		name:'村名',
-		attr:"villageName"
-	},
-	mainReason:{
-		name:'主要致贫原因',
-		attr:"mainReason",
-	},
-	otherReason:{
-		name:'其他致贫原因',
-		attr:'otherReason'
-	},
-	phoneNumber:{
-		name:'联系号码',
-		attr:'phoneNumber'
-	},
-	outPoorYear:{
-		name:'脱贫年限',
-		attr:'outPoorYear'
-	},
-	minimumFund:{
-		name:'低保金',
-		attr:'minimumFund'
-	},
-	fiveFund:{
-		name:'五保金',
-		attr:'fiveFund'
-	},
-	oldAgeFund:{
-		name:'养老保险金',
-		attr:'oldAgeFund'
-	},
-	sellIncome:{
-		name:'家庭经营性收入',
-		attr:'sellIncome'
-	},
-	salaryIncome:{
-		name:'务工收入',
-		attr:'salaryIncome'
-	},
-	averageFund:{
-		name:'人均纯收入',
-		attr:'averageFund'
-	},
-	poorFamilyMember:{
-		name:'家庭成员',
-		attr:'poorFamilyMember'
-	},
-	peopleCode:{
-		name:'人编号',
-		attr:'peopleCode'
-	},
-	name:{
-		name:'贫困户姓名',
-		attr:'name'
-	},
-	sex:{
-		name:'性别',
-		attr:'sex'
-	},
-	idNumber:{
-		name:'身份证号码',
-		attr:'idNumber'
-	},
-	birthday:{
-		name:'出生日期',
-		attr:'birthday'
-	},
-	familyRelation:{
-		name:'与户主关系',
-		attr:'familyRelation'
-	},
-	education:{
-		name:'文化程度',
-		attr:'education'
-	},
-	grade:{
-		name:'年级',
-		attr:'grade'
-	},
-	workSkills:{
-		name:'劳动技能',
-		attr:'workSkills'
-	},
-	workMonth:{
-		name:'务工时间',
-		attr:'workMonth'
-	},
-	healthInfo:{
-		name:'健康状况',
-		attr:'healthInfo'
-	},
-	numerType:{
-		name:'证件类型',
-		attr:'numerType'
-	}
-};*/
-
-var constMap = require('./constMap');
-var CONST = constMap.getCONST();
+var constMap = require('./constMap'),
+	CONST = constMap.getCONST();
 var areaMap = require('./areaMap');
 
 var Conf = {
@@ -128,26 +17,223 @@ var Conf = {
 		gt16:20001231,
 		lt59:19580101,
 		gt30:19861231,
-		questions:[40,43,44,45,49,50,51,53,54,58,59,60,61,66]
+		questions:[4,5,6,8,9,10,11,12,13,14,15,16,40,43,44,45,49,50,51,53,54,58,59,60,61,66,67,71,72,76,80]
 	}
 };
 
+//添加贫困户户主信息
+var pushFamilyBaseInfo = function(poorFamily){
+	var result = [];
+	result.push(poorFamily.townName);
+	result.push(poorFamily.villageName);
+	result.push(poorFamily.poorFamilyMember[0].name);
+	result.push(poorFamily.poorFamilyMember[0].idNumber);
+	return result;
+};
+
+//添加贫困人口信息
+var pushPoorBaseInfo = function(poorFamily,poor){
+	var result = [];
+	result.push(poorFamily.townName);
+	result.push(poorFamily.villageName);
+	result.push(poor.name);
+	result.push(poor.idNumber);
+	return result;
+};
+
 var questionType = {
+	'4':{
+		attr:'poorAttrNull',
+		name:'贫困户属性为空',
+		check : function(poorFamily){
+			var thisQues = this,
+			poorAttr = poorFamily.poorAttr;
+			if(poorAttr == null){
+				var result = pushFamilyBaseInfo(poorFamily);
+				thisQues.results.push(result);
+			}
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'5':{
+		attr:'isSoldierWifeHouseNull',
+		name:'是否是军烈属为空',
+		check : function(poorFamily){
+			var thisQues = this,
+			isSoldierWifeHouse = poorFamily.isSoldierWifeHouse;
+			if(isSoldierWifeHouse == null){
+				var result = pushFamilyBaseInfo(poorFamily);
+				thisQues.results.push(result);
+			}
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'6':{
+		attr:'sexNull',
+		name:'性别为空',
+		check : function(poorFamily){
+			var thisQues = this;
+			poorFamily.poorFamilyMember.forEach(function(poor,item){
+				var sex = poor.sex;
+				if(sex == null){
+					var result = pushPoorBaseInfo(poorFamily,poor);
+					result.push(sex);
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'8':{
+		attr:'familyRelationNull',
+		name:'与户主关系为空',
+		check : function(poorFamily){
+			var thisQues = this;
+			poorFamily.poorFamilyMember.forEach(function(poor,item){
+				var familyRelation = poor.familyRelation;
+				if(familyRelation == null){
+					var result = pushPoorBaseInfo(poorFamily,poor);;
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'9':{
+		attr:'nationNull',
+		name:'民族为空',
+		check : function(poorFamily){
+			var thisQues = this;
+			poorFamily.poorFamilyMember.forEach(function(poor,item){
+				var nation = poor.nation;
+				if(nation == null){
+					var result = pushPoorBaseInfo(poorFamily,poor);
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'10':{
+		attr:'politicStatusNull',
+		name:'政治面貌为空',
+		check : function(poorFamily){
+			//todo 政治面貌字段未录入数据库
+			return;
+
+			var thisQues = this;
+			poorFamily.poorFamilyMember.forEach(function(poor,item){
+				var politicStatus = poor.politicStatus;
+				if(politicStatus == null){
+					var result = pushPoorBaseInfo(poorFamily,poor);
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'11':{
+		attr:'educationNull',
+		name:'非在校生文化程度为空',
+		check : function(poorFamily){
+			var thisQues = this;
+			poorFamily.poorFamilyMember.forEach(function(poor,item){
+				var education = poor.education,
+				grade = poor.grade;
+				if((grade == '01')&&(education == null)){
+					var result = pushPoorBaseInfo(poorFamily,poor);
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'12':{
+		attr:'gradeNull',
+		name:'在校生情况为空',
+		check : function(poorFamily){
+			var thisQues = this;
+			poorFamily.poorFamilyMember.forEach(function(poor,item){
+				var grade = poor.grade;
+				if(grade == null){
+					var result = pushPoorBaseInfo(poorFamily,poor);
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'13':{
+		attr:'healthyInfoNull',
+		name:'健康状况为空',
+		check : function(poorFamily){
+			var thisQues = this;
+			poorFamily.poorFamilyMember.forEach(function(poor,item){
+				var healthInfo = poor.healthInfo;
+				if(healthInfo == null){
+					var result = pushPoorBaseInfo(poorFamily,poor);
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'14':{
+		attr:'workSkillsNull',
+		name:'劳动技能为空',
+		check : function(poorFamily){
+			var thisQues = this;
+			poorFamily.poorFamilyMember.forEach(function(poor,item){
+				var workSkills = poor.workSkills;
+				if(workSkills == null){
+					var result = pushPoorBaseInfo(poorFamily,poor);
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'15':{
+		attr:'isBuyMedicareNull',
+		name:'是否购买大病医疗保险为空',
+		check : function(poorFamily){
+			//todo isBuyMedicare字段未录入数据库
+			return ;
+			var thisQues = this;
+			poorFamily.poorFamilyMember.forEach(function(poor,item){
+				var isBuyMedicare = poor.isBuyMedicare;
+				if(isBuyMedicare == null){
+					var result = pushPoorBaseInfo(poorFamily,poor);
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'16':{
+		attr:'isSoldierNull',
+		name:'是否现役军人为空',
+		check : function(poorFamily){
+			var thisQues = this;
+			poorFamily.poorFamilyMember.forEach(function(poor,item){
+				var isSoldier = poor.isSoldier;
+				if(isSoldier == null){
+					var result = pushPoorBaseInfo(poorFamily,poor);
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
 	'40':{
 		attr:'idNumLengthErr',
 		name:'证件号码长度异常',
 		check : function(poorFamily){
 			var thisQues = this;
 			poorFamily.poorFamilyMember.forEach(function(poor,key){
-				var idNumber = poor.idNumber,
-					idLength = idNumber.length;
-
-				if((idLength!=15) && (idLength!=18) && (idLength!=20) ){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poor.name);
-					result.push(poor.idNumber);
+				var idNumber = poor.idNumber;
+				if((idNumber==null) || ((idNumber.length!=18) && (idNumber.length!=20))){
+					var result = pushPoorBaseInfo(poorFamily,poor);
 					result.push(idLength);
 					thisQues.results.push(result);
 				}
@@ -166,11 +252,7 @@ var questionType = {
 					idLength = idNumber.length;
 
 				if(poor.numerType=='09' && (idLength!=20) ){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poor.name);
-					result.push(poor.idNumber);
+					var result = pushPoorBaseInfo(poorFamily,poor);
 					result.push(idLength);
 					result.push(constMap.getValue(CONST.numerType.attr,poor.numerType));
 					thisQues.results.push(result);
@@ -188,11 +270,7 @@ var questionType = {
 			poorFamily.poorFamilyMember.forEach(function(poor,key){
 				var workMonth = poor.workMonth;
 				if(((workMonth-12)>0) || isNaN(workMonth-0)){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poor.name);
-					result.push(poor.idNumber);
+					var result = pushPoorBaseInfo(poorFamily,poor);
 					result.push(workMonth);
 					thisQues.results.push(result);
 				}
@@ -208,11 +286,7 @@ var questionType = {
 			var thisQues = this;
 			var averageFund = poorFamily.averageFund;
 			if((averageFund > 30000) || (averageFund == 0)){
-				var result = [];
-				result.push(poorFamily.townName);
-				result.push(poorFamily.villageName);
-				result.push(poorFamily.poorFamilyMember[0].name);
-				result.push(poorFamily.poorFamilyMember[0].idNumber);
+				var result = pushFamilyBaseInfo(poorFamily);
 				result.push(averageFund);
 				thisQues.results.push(result);
 			}
@@ -237,7 +311,6 @@ var questionType = {
 				if(idSex == 0){
 					idSex = 2;
 				}
-				var result = [];
 				var errFlag = (idSex != sex);
 				var checkMateSex = function(){
 					if((typeof houseHoldSex != 'undefined') && (typeof mateSex != 'undefined')){
@@ -280,10 +353,7 @@ var questionType = {
 				}
 
 				if(errFlag){
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poor.name);
-					result.push(poor.idNumber);
+				var result = pushPoorBaseInfo(poorFamily,poor);
 					result.push(constMap.getValue(CONST.sex.attr,sex));
 					result.push(constMap.getValue(CONST.familyRelation.attr,familyRelation));
 					thisQues.results.push(result);
@@ -307,11 +377,7 @@ var questionType = {
 			});
 
 			if(!hasHousehold){
-				var result = [];
-				result.push(poorFamily.townName);
-				result.push(poorFamily.villageName);
-				result.push(poorFamily.poorFamilyMember[0].name);
-				result.push(poorFamily.poorFamilyMember[0].idNumber);
+				var result = pushFamilyBaseInfo(poorFamily);
 				result.push(constMap.getValue(CONST.familyRelation.attr,poorFamily.poorFamilyMember[0].familyRelation));
 				thisQues.results.push(result);
 			}
@@ -330,12 +396,7 @@ var questionType = {
 			}else{
 				var otherReasonArr = otherReason.split(',');
 				if(otherReasonArr.length>2){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poorFamily.poorFamilyMember[0].name);
-					result.push(poorFamily.poorFamilyMember[0].idNumber);
-					
+					var result = pushFamilyBaseInfo(poorFamily);
 					var otherReasonStr = [constMap.getValue(CONST.otherReason.attr,otherReasonArr[0])
 					,constMap.getValue(CONST.otherReason.attr,otherReasonArr[1])
 					,constMap.getValue(CONST.otherReason.attr,otherReasonArr[2])]
@@ -367,11 +428,7 @@ var questionType = {
 					}
 				});
 				if(isRepet){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poorFamily.poorFamilyMember[0].name);
-					result.push(poorFamily.poorFamilyMember[0].idNumber);
+					var result = pushFamilyBaseInfo(poorFamily);
 					result.push(mainReason);
 					thisQues.results.push(result);
 				}
@@ -398,11 +455,7 @@ var questionType = {
 			}
 
 			if(noWorkMonth){
-				var result = [];
-				result.push(poorFamily.townName);
-				result.push(poorFamily.villageName);
-				result.push(poorFamily.poorFamilyMember[0].name);
-				result.push(poorFamily.poorFamilyMember[0].idNumber);
+				var result = pushFamilyBaseInfo(poorFamily);
 				result.push(poorFamily.salaryIncome);
 				thisQues.results.push(result);
 			}
@@ -419,11 +472,7 @@ var questionType = {
 			poorFamily.poorFamilyMember.forEach(function(poor,key){
 				var workMonth = poor.workMonth;
 				if((workMonth > 0) && (salaryIncome == 0)){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poor.name);
-					result.push(poor.idNumber);
+					var result = pushPoorBaseInfo(poorFamily,poor);
 					result.push(poor.workMonth);
 					thisQues.results.push(result);
 				}
@@ -442,11 +491,7 @@ var questionType = {
 					workSkills = poor.workSkills;
 
 				if((workMonth > 0) && (workSkills >= 3)){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poor.name);
-					result.push(poor.idNumber);
+					var result = pushPoorBaseInfo(poorFamily,poor);
 					result.push(poor.workMonth);
 					result.push(constMap.getValue(CONST.workSkills.attr,workSkills));
 					thisQues.results.push(result);
@@ -468,11 +513,7 @@ var questionType = {
 
 				var isInAge = (birthday < Conf[Conf.years].gt16) && (birthday > Conf[Conf.years].lt59);
 				if(isInAge && (workSkills >=3) && (healthInfo == '01') ){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poor.name);
-					result.push(poor.idNumber);
+					var result = pushPoorBaseInfo(poorFamily,poor);
 					result.push(constMap.getValue(CONST.healthInfo.attr,healthInfo));
 					result.push(constMap.getValue(CONST.workSkills.attr,workSkills));
 					result.push(birthday);
@@ -494,11 +535,7 @@ var questionType = {
 
 				var isInAge = (birthday < Conf[Conf.years].gt30) ;
 				if(isInAge && (grade > 1) ){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poor.name);
-					result.push(poor.idNumber);
+					var result = pushPoorBaseInfo(poorFamily,poor);
 					result.push(constMap.getValue(CONST.grade.attr,grade));
 					result.push(birthday);
 					thisQues.results.push(result);
@@ -519,11 +556,7 @@ var questionType = {
 
 				var isInAge = (birthday > Conf[Conf.years].lt14) && (birthday < Conf[Conf.years].gt7) ;
 				if(isInAge && (grade == '01') ){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poor.name);
-					result.push(poor.idNumber);
+					var result = pushPoorBaseInfo(poorFamily,poor);
 					result.push(constMap.getValue(CONST.grade.attr,grade));
 					result.push(birthday);
 					thisQues.results.push(result);
@@ -543,17 +576,145 @@ var questionType = {
 					numerType = poor.numerType;
 
 				if((healthInfo == '04') && (numerType != '09')){
-					var result = [];
-					result.push(poorFamily.townName);
-					result.push(poorFamily.villageName);
-					result.push(poor.name);
-					result.push(poor.idNumber);
+					var result = pushPoorBaseInfo(poorFamily,poor);
 					result.push(constMap.getValue(CONST.healthInfo.attr,healthInfo));
 					thisQues.results.push(result);
 				}
 			});
 		},
 		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name,CONST.healthInfo.name]]
+	},
+	'67':{
+		attr:'disCredentialsErr2',
+		name:'有残疾证健康状况为健康',
+		check : function(poorFamily){
+			var thisQues = this;
+
+			poorFamily.poorFamilyMember.forEach(function(poor,key){
+				var healthInfo = poor.healthInfo,
+					numerType = poor.numerType;
+
+				if((numerType == '09') && (healthInfo == '01')){
+					var result = pushPoorBaseInfo(poorFamily,poor);
+					result.push(constMap.getValue(CONST.healthInfo.attr,healthInfo));
+					thisQues.results.push(result);
+				}
+			});
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name,CONST.healthInfo.name]]
+	},
+	
+	'71':{
+		attr:'mainReasonForSickErr',
+		name:'【未脱贫】全家健康因病致贫',
+		check : function(poorFamily){
+			var thisQues = this,
+				mainReason = poorFamily.mainReason,
+				isOut = poorFamily.isOut;
+
+			if((isOut !='0') || (mainReason != '01')){
+				return;
+			}
+			var isSick = false;
+			poorFamily.poorFamilyMember.forEach(function(poor,key){
+				var healthInfo = poor.healthInfo;
+				if(healthInfo != '01'){
+					isSick =  true;
+				}
+			});
+			if(!isSick){
+				var result = pushFamilyBaseInfo(poorFamily);
+				thisQues.results.push(result);
+			}
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'72':{
+		attr:'mainReasonForEducationErr',
+		name:'【未脱贫】全家无在校生因学致贫',
+		check : function(poorFamily){
+			var thisQues = this,
+				mainReason = poorFamily.mainReason,
+				isOut = poorFamily.isOut;
+
+			if((isOut !='0') || (mainReason != '03')){
+				return;
+			}
+			var isInSchool = false;
+			poorFamily.poorFamilyMember.forEach(function(poor,key){
+				var grade = poor.grade;
+				if(grade >= 7){
+					isInSchool =  true;
+				}
+			});
+			if(!isInSchool){
+				var result = pushFamilyBaseInfo(poorFamily);
+				thisQues.results.push(result);
+			}
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'73':{
+		attr:'mainReasonForDisabledErr',
+		name:'全家无残疾人因残致贫',
+		check : function(poorFamily){
+			var thisQues = this,
+				mainReason = poorFamily.mainReason;
+
+			if(mainReason != '02'){
+				return;
+			}
+			var isDisabled = false;
+			poorFamily.poorFamilyMember.forEach(function(poor,key){
+				var numerType = poor.numerType;
+				if(numerType == '09'){
+					isDisabled =  true;
+				}
+			});
+			if(!isDisabled){
+				var result = pushFamilyBaseInfo(poorFamily);
+				thisQues.results.push(result);
+			}
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name]]
+	},
+	'76':{
+		attr:'minimumFundAndFiveFundErr',
+		name:'同时领取五保金和低保金',
+		check : function(poorFamily){
+			var thisQues = this,
+				fiveFund = poorFamily.fiveFund,
+				minimumFund = poorFamily.minimumFund;
+
+			if((minimumFund > 0 ) && (fiveFund > 0)){
+				var result = pushFamilyBaseInfo(poorFamily);
+				result.push(minimumFund);
+				result.push(fiveFund);
+				thisQues.results.push(result);
+			}
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name,CONST.minimumFund.name,CONST.fiveFund.name]]
+	},
+	'80':{
+		attr:'householdErr2',
+		name:'存在多个户主',
+		check : function(poorFamily){
+			var thisQues = this;
+
+			var householdCount = 0;
+			poorFamily.poorFamilyMember.forEach(function(poor,key){
+				var familyRelation = poor.familyRelation;
+				if(familyRelation == '01'){
+					householdCount++;
+				}
+			});
+			if(householdCount > 1){
+				var result = pushFamilyBaseInfo(poorFamily);
+				result.push(householdCount);
+				thisQues.results.push(result);
+			}
+		},
+		results:[[CONST.townName.name,CONST.villageName.name,CONST.name.name,CONST.idNumber.name,'户主数量']]
 	}
 };
 

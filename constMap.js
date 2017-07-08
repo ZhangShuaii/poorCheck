@@ -56,9 +56,9 @@ var CONST = {
 		name:'联系号码',
 		attr:'phoneNumber'
 	},
-	outPoorYear:{
-		name:'建档立卡时间',
-		attr:'outPoorYear'
+	registYear:{
+		name:'建档立卡年度',
+		attr:'registYear'
 	},
 	minimumFund:{
 		name:'低保金',
@@ -195,6 +195,77 @@ var CONST = {
 		map:{
 			'09':'残疾人证',
 			'01':'身份证'
+		}
+	},
+	isOut:{
+		name:'是否脱贫',
+		attr:'isOut',
+		map:{
+			'0':'未脱贫',
+			'1':'已脱贫'
+		}
+	},
+	nation:{
+		name:'民族',
+		attr:'nation',
+		map:{
+			'01':'汉族'
+		}
+	},
+	bankCardId:{
+		name:'银行卡号',
+		attr:'bankCardId'		
+	},
+	poorAttr:{
+		name:'贫困户属性',
+		attr:'poorAttr',
+		map:{
+			'01':'一般贫困户',
+			'02':'低保户',
+			'03':'五保户',
+			'04':'低保贫困户',
+			'05':'一般农户',
+			'06':'五保贫困户'
+		}	
+	},
+	bankCardName:{
+		name:'开户行名称',
+		attr:'bankCardName',
+	},
+	outPoorYear:{
+		name:'脱贫年度',
+		attr:'outPoorYear',
+	},
+	isSoldierWifeHouse:{
+		name:'是否是军烈属',
+		attr:'isSoldierWifeHouse',	
+		map:{
+			'0':'否',
+			'1':'是'
+		}	
+	},
+	politicStatus:{
+		name:'政治面貌',
+		attr:'politicStatus',
+		map:{
+			'01':'中共党员',
+			'13':'群众'
+		}
+	},
+	isBuyMedicare:{
+		name:'是否购买大病医疗保险',
+		attr:'isBuyMedicare',
+		map:{
+			'1':'是',
+			'0':'否'
+		}
+	},
+	isSoldier:{
+		name:'是否现役军人',
+		attr:'isSoldier',
+		map:{
+			'1':'是',
+			'0':'否'
 		}
 	}
 };

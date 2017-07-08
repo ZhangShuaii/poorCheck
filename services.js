@@ -1,8 +1,9 @@
 var DAO =require('./dao');
-var checkQuestion = require('./check');
+var CheckQuestion = require('./check');
+var Report =  require('./writeExcel');
 
 DAO.getAllPoors(function(results){
-	var results = checkQuestion.check(2017,results);
-	console.log("错误类型："+results.length);
-	console.log(results[results.length-1].results);
+	var results = CheckQuestion.check(2017,results);
+	var reportsJson = Report.writeExcel(results);
+	console.log(reportsJson[3]);
 });
