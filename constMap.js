@@ -73,7 +73,7 @@ var CONST = {
 		attr:'oldAgeFund'
 	},
 	sellIncome:{
-		name:'家庭经营性收入',
+		name:'生产经营性收入',
 		attr:'sellIncome'
 	},
 	salaryIncome:{
@@ -111,6 +111,10 @@ var CONST = {
 	birthday:{
 		name:'出生日期',
 		attr:'birthday'
+	},
+	familyCode:{
+		name:'户编号',
+		attr:'familyCode'
 	},
 	familyRelation:{
 		name:'与户主关系',
@@ -202,7 +206,9 @@ var CONST = {
 		attr:'isOut',
 		map:{
 			'0':'未脱贫',
-			'1':'已脱贫'
+			'1':'已脱贫',
+			'3':'返贫',
+			'4':'稳定脱贫'
 		}
 	},
 	nation:{
@@ -267,6 +273,110 @@ var CONST = {
 			'1':'是',
 			'0':'否'
 		}
+	},
+	transferIncome:{
+		name:'转移性收入',
+		attr:'transferIncome'
+	},
+	resourceIncome:{
+		name:'财产性收入',
+		attr:'resourceIncome'
+	},
+	otherTransferIncome:{
+		name:'其他转移性收入',
+		attr:'otherTransferIncome'
+	},
+	cultivatedArea:{
+		name:'耕地面积',
+		attr:'cultivatedArea'		
+	},
+	irrigatedArea:{
+		name:'有效灌溉面积',
+		attr:'irrigatedArea'		
+	},
+	forestlandArea:{
+		name:'林地面积',
+		attr:'forestlandArea'		
+	},
+	fruitArea:{
+		name:'林果面积',
+		attr:'fruitArea'		
+	},
+	grassArea:{
+		name:'牧草面积',
+		attr:'grassArea'		
+	},
+	poolArea:{
+		name:'水面面积',
+		attr:'poolArea'		
+	},
+	hasElectricOfProduct:{
+		name:'是否通生产用电',
+		attr:'hasElectricOfProduct'		
+	},
+	distanceFromRoad:{
+		name:'与村主干道距离',
+		attr:'distanceFromRoad'		
+	},
+	roadType:{
+		name:'入户路类型',
+		attr:'roadType'		
+	},
+	houseArea:{
+		name:'住房面积',
+		attr:'houseArea'	
+	},
+	hasElectricOfLive:{
+		name:'是否通生活用电',
+		attr:'hasElectricOfLive',
+		map:{
+			'1':'是',
+			'0':'否'
+		}
+	},
+	isDifficultWater:{
+		name:'是否饮水困难',
+		attr:'isDifficultWater'		
+	},
+	isSafeWater:{
+		name:'是否饮水安全',
+		attr:'isDifficultWater'			
+	},
+	mainFuelType:{
+		name:'主要燃料类型',
+		attr:'mainFuelType'			
+	},
+	hasCleanWC:{
+		name:'有无卫生厕所',
+		attr:'hasCleanWC'			
+	},
+	workCity:{
+		name:'务工所在地',
+		attr:'workCity'			
+	},
+	companyName:{
+		name:'务工企业名称',
+		attr:'companyName'	
+	},
+	isMini:{
+		name:'是否享受低保',
+		attr:'isMini',
+		map:{
+			'1':'是',
+			'0':'否'
+		}
+	},
+	isDangerHouse:{
+		name:'是否是危房户',
+		attr:'isDangerHouse',
+		map:{
+			'1':'是',
+			'0':'否'
+		}	
+	},
+	expend:{
+		name:'生产经营性支出',
+		attr:'expend'	
 	}
 };
 

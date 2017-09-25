@@ -18,7 +18,6 @@ var writeReports = function(reports){
 	tabHead.push('合计');
 	worksheet.addRow(tabHead);
 	reportsJson.push(tabHead);
-	// console.log(reports);
 	var colCount = ['合计',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 		rowCount = 0;
 	for(var name in reports){
@@ -60,7 +59,7 @@ exports.writeExcel = function(results){
 			}
 		});
 		reports[err.name] = reportsErr;
-		// workbook.xlsx.writeFile("名单/" + err.name + getDate() + ".xlsx");
+		workbook.xlsx.writeFile("名单/" + err.name + getDate() + ".xlsx");
 	});
 
 	writeReports(reports);
